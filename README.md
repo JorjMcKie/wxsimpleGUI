@@ -13,7 +13,7 @@ The following functions are currently implemented:
 |OpenDlg|Multiple file selection|
 |ExcBox|Display traceback of last exception|
 |YesNoBox|Return True or False|
-|InputBox|Return entered string|
+|InputBox|Return user entered string|
 |MultInputBox|Simple multiple data input dialog|
 |MsgBox|The standard one|
 |BusyInfo|Display non-blocking info|
