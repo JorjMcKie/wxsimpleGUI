@@ -209,8 +209,8 @@ def MultInputBox(title, msg_text, Label, Feld, icon = None):
     if num_fields != len(Label):
         raise ValueError("unequal number of labels and fields")
 
-    field_lbl = range(num_fields)
-    field_cont = range(num_fields)
+    field_lbl = list(range(num_fields))
+    field_cont = list(range(num_fields))
 
     fgs = wx.FlexGridSizer(rows=num_fields, cols=2, hgap=5, vgap=5)
 
