@@ -100,13 +100,13 @@ def OpenDlg(title="Choose files", mult = True, icon = None,
                         defaultDir = startdir,
                         defaultFile = "",
                         wildcard=wild,
-                        style=wx.OPEN | wx.MULTIPLE | wx.CHANGE_DIR)
+                        style = wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_CHANGE_DIR)
     else:
         dlg = wx.FileDialog(None, message = title,
                         defaultDir = startdir,
                         defaultFile = "",
                         wildcard = wild,
-                        style=wx.OPEN | wx.CHANGE_DIR)
+                        style = wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
     dlg.Size = size
     if icon:
