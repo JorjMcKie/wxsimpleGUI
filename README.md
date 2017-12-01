@@ -21,5 +21,11 @@ The following functions are currently implemented:
 
 # Example
 
+```
 import wxsimpleGUI as sg
 answer = sg.YesNoBox("Do you smoke?", "an honest answer please!")
+if answer:
+    print("you are reducing your life expectancy!")
+else:
+    print("I hope you didn't lie ...")
+''' 
