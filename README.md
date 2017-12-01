@@ -11,7 +11,7 @@ The following functions are currently implemented:
 |SelectMult|Select multiple out of a list of strings|
 |DirDlg|Standard directory selection|
 |OpenDlg|Multiple file selection|
-|ExcBox|Display tracback of last exception|
+|ExcBox|Display traceback of last exception|
 |YesNoBox|Return True or False|
 |InputBox|Return entered string|
 |MultInputBox|Simple multiple data input dialog|
