@@ -5,6 +5,20 @@ import  wx.lib.layoutf as layoutf
 import traceback, wx, os
 app = wx.App()
 
+def set_icon(dlg, icon):
+    if not icon:
+        return
+    if type(icon) is str:
+        ico = wx.Icon(icon)
+        dlg.SetIcon(ico)
+        return
+    if type(icon) == type(wx.Icon()):
+        dlg.SetIcon(ico)
+        return
+    if hasattr(icon, "GetIcon"):
+        dlg.SetIcon(icon.GetIcon())
+        return
+    return
 #-----------------------------------------------------------------------------#
 # SelectOne
 #-----------------------------------------------------------------------------#
@@ -17,8 +31,7 @@ def SelectOne(title, msg, lst, size = (-1, -1), icon = None):
     app = wx.App()
     dlg = wx.SingleChoiceDialog(None, msg, title, lst, wx.CHOICEDLG_STYLE)
     dlg.Size = size
-    if icon:
-        dlg.SetIcon(icon.GetIcon())
+    set_icon(dlg, icon)
     if dlg.ShowModal() == wx.ID_OK:
         sel = dlg.GetStringSelection()
     else:
@@ -40,8 +53,7 @@ def SelectMult(title, msg, lst, preselect=None, size = (-1, -1), icon = None):
     '''
     app = wx.App()
     dlg = wx.MultiChoiceDialog(None, msg, title, lst)
-    if icon:
-        dlg.SetIcon(icon.GetIcon())
+    set_icon(dlg, icon)
     if type(preselect) == type([]):
         dlg.SetSelections(preselect)
 
@@ -66,8 +78,7 @@ def DirDlg(title="Choose a directory:",
     dlg = wx.DirDialog(None, title, pos=(-1,-1),
                   style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST | \
                   wx.DD_CHANGE_DIR)
-    if icon:
-        dlg.SetIcon(icon.GetIcon())
+    set_icon(dlg, icon)
     dlg.SetPath(startdir)
     dlg.Size = size
 
@@ -109,8 +120,7 @@ def OpenDlg(title="Choose files", mult = True, icon = None,
                         style = wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
     dlg.Size = size
-    if icon:
-        dlg.SetIcon(icon.GetIcon())
+    set_icon(dlg, icon)
     # Show the dialog and retrieve the user response.
     # If OK process data.
     if dlg.ShowModal() == wx.ID_OK:
@@ -146,8 +156,7 @@ def YesNoBox(title, msg="", icon = None):
     app = wx.App()
 
     dlg = wx.MessageDialog(None, msg, title, wx.YES_NO | wx.ICON_QUESTION)
-    if icon:
-        dlg.SetIcon(icon.GetIcon())
+    set_icon(dlg, icon)
     result = dlg.ShowModal()
     dlg.Destroy()
     del app
@@ -164,8 +173,7 @@ def InputBox(title, msg, ein="", icon = None):
     app = wx.App()
 
     dlg = wx.TextEntryDialog(None, msg, title, ein)
-    if icon:
-        dlg.SetIcon(icon.GetIcon())
+    set_icon(dlg, icon)
     if dlg.ShowModal() == wx.ID_OK:
         rc = dlg.GetValue()
         if not rc: rc = None
@@ -230,8 +238,7 @@ def MultInputBox(title, msg_text, Label, Feld, icon = None):
     btns.AddButton(cancel) 
     btns.Realize()
     sizer.Add(btns, 0, wx.EXPAND|wx.ALL, 5) # add btn size
-    if icon:
-        dlg.SetIcon(icon.GetIcon())
+    set_icon(dlg, icon)
     dlg.SetSizer(sizer)  
     sizer.Fit(dlg)       
     dlg.Center()         
@@ -261,7 +268,7 @@ def MsgBox(title, msg):
 #-----------------------------------------------------------------------------#
 # BusyInfo
 #-----------------------------------------------------------------------------#
-def BusyInfo(title, msg, bild = None):
+def BusyInfo(title, msg, img = None):
     '''
     Show a "busy" message. Will not block but return the busy-object.
     Important: this will NEVER disappear - except when you delete this object!
@@ -273,7 +280,7 @@ def BusyInfo(title, msg, bild = None):
 
     if not bild:
         img = wx.NullBitmap
-    elif type(bild) == type(u""):
+    elif type(bild) is str:
         if bild.endswith(".ico"):
             icon = wx.Icon(bild, wx.BITMAP_TYPE_ICO)
             img = wx.BitmapFromIcon(icon)
@@ -298,8 +305,7 @@ class CodeBoxFF(wx.Dialog):
                  wx.FULL_REPAINT_ON_RESIZE):
 
         wx.Dialog.__init__(self, parent, -1, caption, pos, size, style)
-        if icon:
-            self.SetIcon(icon.GetIcon())
+
         # always center on screen
         self.CenterOnScreen(wx.BOTH)
         self.text = text = wx.TextCtrl(self, -1, msg,
@@ -336,19 +342,19 @@ def CodeBox(title, msg, size=(800,600), FF=True, icon = None):
 
     if type(msg) in (list, tuple):
         msg_d = "\n".join(msg)
-    elif msg.startswith("file="):   # den Inhalt einer Datei anzeigen
+    elif msg.startswith("file="):
         fname = msg[5:]
-        try:                        # wenn das mal gut geht ...
+        try:
             fid = open(fname)
             msg_d = fid.read()
             fid.close()
-        except:                     # hab's ja geahnt!
-            msg_d = msg + "\nexistiert nicht!"
+        except:
+            msg_d = msg + "\ndoes not exist!"
     else:
         msg_d = msg
 
     dlg = CodeBoxFF(None, msg_d, title, size=size, FF=FF, icon = icon)
-
+    set_icon(dlg, icon)
     dlg.ShowModal()
     dlg.Destroy()
     del app
