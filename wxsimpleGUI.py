@@ -3,24 +3,12 @@
 
 import  wx.lib.layoutf as layoutf
 import traceback, wx, os
-app = wx.App()
 
-def set_icon(dlg, icon):
-    if not icon:
-        return
-    if type(icon) is str:
-        ico = wx.Icon(icon)
-        dlg.SetIcon(ico)
-        return
-    if type(icon) == type(wx.Icon()):
-        dlg.SetIcon(ico)
-        return
-    if hasattr(icon, "GetIcon"):
-        dlg.SetIcon(icon.GetIcon())
-        return
-    return
+#TODO Check to see if this is still needed. Don't think that it is now that eash func also calls
+# app = wx.App()
+
 #-----------------------------------------------------------------------------#
-# SelectOne
+#                   SelectOne                                                 #
 #-----------------------------------------------------------------------------#
 def SelectOne(title, msg, lst, size = (-1, -1), icon = None):
     '''
@@ -31,7 +19,8 @@ def SelectOne(title, msg, lst, size = (-1, -1), icon = None):
     app = wx.App()
     dlg = wx.SingleChoiceDialog(None, msg, title, lst, wx.CHOICEDLG_STYLE)
     dlg.Size = size
-    set_icon(dlg, icon)
+    if icon:
+        dlg.SetIcon(icon.GetIcon())
     if dlg.ShowModal() == wx.ID_OK:
         sel = dlg.GetStringSelection()
     else:
@@ -42,7 +31,7 @@ def SelectOne(title, msg, lst, size = (-1, -1), icon = None):
     return sel
 
 #-----------------------------------------------------------------------------#
-# SelectMult
+#                   SelectMult                                                #
 #-----------------------------------------------------------------------------#
 def SelectMult(title, msg, lst, preselect=None, size = (-1, -1), icon = None):
     '''
@@ -53,7 +42,8 @@ def SelectMult(title, msg, lst, preselect=None, size = (-1, -1), icon = None):
     '''
     app = wx.App()
     dlg = wx.MultiChoiceDialog(None, msg, title, lst)
-    set_icon(dlg, icon)
+    if icon:
+        dlg.SetIcon(icon.GetIcon())
     if type(preselect) == type([]):
         dlg.SetSelections(preselect)
 
@@ -68,7 +58,7 @@ def SelectMult(title, msg, lst, preselect=None, size = (-1, -1), icon = None):
     return selections
 
 #-----------------------------------------------------------------------------#
-# DirDlg
+#                   DirDlg                                                    #
 #-----------------------------------------------------------------------------#
 def DirDlg(title="Choose a directory:",
            startdir = os.getcwd(), size =(-1, -1), icon = None):
@@ -78,7 +68,8 @@ def DirDlg(title="Choose a directory:",
     dlg = wx.DirDialog(None, title, pos=(-1,-1),
                   style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST | \
                   wx.DD_CHANGE_DIR)
-    set_icon(dlg, icon)
+    if icon:
+        dlg.SetIcon(icon.GetIcon())
     dlg.SetPath(startdir)
     dlg.Size = size
 
@@ -91,7 +82,7 @@ def DirDlg(title="Choose a directory:",
     return path
 
 #-----------------------------------------------------------------------------#
-# OpenDlg
+#                   OpenDlg                                                   #
 #-----------------------------------------------------------------------------#
 def OpenDlg(title="Choose files", mult = True, icon = None,
             startdir = os.getcwd(), wildcard = None, size = (-1, -1)):
@@ -101,8 +92,8 @@ def OpenDlg(title="Choose files", mult = True, icon = None,
     app = wx.App()
 
     if wildcard is None:
-        wild = "Python Dateien (*.py*)|*.py*|"     \
-                   "Alle Dateien (*.*)|*.*"
+        wild = "Python Files (*.py*)|*.py*|"     \
+                   "All Files (*.*)|*.*"
     else:
         wild = wildcard
 
@@ -120,7 +111,8 @@ def OpenDlg(title="Choose files", mult = True, icon = None,
                         style = wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
     dlg.Size = size
-    set_icon(dlg, icon)
+    if icon:
+        dlg.SetIcon(icon.GetIcon())
     # Show the dialog and retrieve the user response.
     # If OK process data.
     if dlg.ShowModal() == wx.ID_OK:
@@ -133,7 +125,7 @@ def OpenDlg(title="Choose files", mult = True, icon = None,
     return paths
 
 #-----------------------------------------------------------------------------#
-# ExcBox
+#                   ExcBox                                                    #
 #-----------------------------------------------------------------------------#
 def ExcBox(title="Exception"):
     '''
@@ -147,7 +139,7 @@ def ExcBox(title="Exception"):
     return
 
 #-----------------------------------------------------------------------------#
-# YesNoBox
+#                   YesNoBox                                                  #
 #-----------------------------------------------------------------------------#
 def YesNoBox(title, msg="", icon = None):
     '''
@@ -156,7 +148,8 @@ def YesNoBox(title, msg="", icon = None):
     app = wx.App()
 
     dlg = wx.MessageDialog(None, msg, title, wx.YES_NO | wx.ICON_QUESTION)
-    set_icon(dlg, icon)
+    if icon:
+        dlg.SetIcon(icon.GetIcon())
     result = dlg.ShowModal()
     dlg.Destroy()
     del app
@@ -164,16 +157,18 @@ def YesNoBox(title, msg="", icon = None):
     return False
 
 #-----------------------------------------------------------------------------#
-# InputBox
+#                   InputBox                                                  #
 #-----------------------------------------------------------------------------#
-def InputBox(title, msg, ein="", icon = None):
+def InputBox(title, msg, default="", icon = None):
     '''
-    Return user entered string.
+    Returns:  user entered string.
+              None if user cancelled
     '''
     app = wx.App()
 
-    dlg = wx.TextEntryDialog(None, msg, title, ein)
-    set_icon(dlg, icon)
+    dlg = wx.TextEntryDialog(None, msg, title, default)
+    if icon:
+        dlg.SetIcon(icon.GetIcon())
     if dlg.ShowModal() == wx.ID_OK:
         rc = dlg.GetValue()
         if not rc: rc = None
@@ -184,7 +179,7 @@ def InputBox(title, msg, ein="", icon = None):
     return rc
 
 #-----------------------------------------------------------------------------#
-# MultInputBox
+#                   MultInputBox                                              #
 #-----------------------------------------------------------------------------#
 def MultInputBox(title, msg_text, Label, Feld, icon = None):
     '''
@@ -238,7 +233,8 @@ def MultInputBox(title, msg_text, Label, Feld, icon = None):
     btns.AddButton(cancel) 
     btns.Realize()
     sizer.Add(btns, 0, wx.EXPAND|wx.ALL, 5) # add btn size
-    set_icon(dlg, icon)
+    if icon:
+        dlg.SetIcon(icon.GetIcon())
     dlg.SetSizer(sizer)  
     sizer.Fit(dlg)       
     dlg.Center()         
@@ -257,7 +253,8 @@ def MultInputBox(title, msg_text, Label, Feld, icon = None):
     return True   
 
 #-----------------------------------------------------------------------------#
-# MsgBox
+#                   MsgBox                                                    #
+# TODO add option to play 'beep' sound. Currently ALWAYS beeping (annoying)   #
 #-----------------------------------------------------------------------------#
 def MsgBox(title, msg):
     app = wx.App()
@@ -266,9 +263,9 @@ def MsgBox(title, msg):
     return
 
 #-----------------------------------------------------------------------------#
-# BusyInfo
+#                   BusyInfo                                                  #
 #-----------------------------------------------------------------------------#
-def BusyInfo(title, msg, img = None):
+def BusyInfo(title, msg, image = None):
     '''
     Show a "busy" message. Will not block but return the busy-object.
     Important: this will NEVER disappear - except when you delete this object!
@@ -278,23 +275,23 @@ def BusyInfo(title, msg, img = None):
 
     app = wx.App()
 
-    if not bild:
+    if not image:
         img = wx.NullBitmap
-    elif type(bild) is str:
-        if bild.endswith(".ico"):
-            icon = wx.Icon(bild, wx.BITMAP_TYPE_ICO)
+    elif type(image) == type(u""):
+        if image.endswith(".ico"):
+            icon = wx.Icon(image, wx.BITMAP_TYPE_ICO)
             img = wx.BitmapFromIcon(icon)
         else:
-            img = wx.Bitmap(bild, wx.BITMAP_TYPE_ANY)
+            img = wx.Bitmap(image, wx.BITMAP_TYPE_ANY)
     else:
-        img = bild.GetBitmap()
+        img = image.GetBitmap()
 
     busy = PBI.PyBusyInfo(msg, parent=None, title=title, icon=img)
     wx.Yield()
     return busy
 
 #-----------------------------------------------------------------------------#
-# CodeBoxFF
+#                   CodeBoxFF                                                 #
 #-----------------------------------------------------------------------------#
 class CodeBoxFF(wx.Dialog):
 
@@ -305,7 +302,8 @@ class CodeBoxFF(wx.Dialog):
                  wx.FULL_REPAINT_ON_RESIZE):
 
         wx.Dialog.__init__(self, parent, -1, caption, pos, size, style)
-
+        if icon:
+            self.SetIcon(icon.GetIcon())
         # always center on screen
         self.CenterOnScreen(wx.BOTH)
         self.text = text = wx.TextCtrl(self, -1, msg,
@@ -329,7 +327,7 @@ class CodeBoxFF(wx.Dialog):
         self.Layout()
 
 #-----------------------------------------------------------------------------#
-# CodeBox
+#                   CodeBox                                                   #
 #-----------------------------------------------------------------------------#
 def CodeBox(title, msg, size=(800,600), FF=True, icon = None):
     '''
@@ -342,20 +340,132 @@ def CodeBox(title, msg, size=(800,600), FF=True, icon = None):
 
     if type(msg) in (list, tuple):
         msg_d = "\n".join(msg)
-    elif msg.startswith("file="):
+    elif msg.startswith("file="):   # den Inhalt einer Datei anzeigen
         fname = msg[5:]
-        try:
+        try:                        # wenn das mal gut geht ...
             fid = open(fname)
             msg_d = fid.read()
             fid.close()
-        except:
-            msg_d = msg + "\ndoes not exist!"
+        except:                     # hab's ja geahnt!
+            msg_d = msg + "\nexistiert nicht!"
     else:
         msg_d = msg
 
     dlg = CodeBoxFF(None, msg_d, title, size=size, FF=FF, icon = icon)
-    set_icon(dlg, icon)
+
     dlg.ShowModal()
     dlg.Destroy()
     del app
     return
+
+# ------------------------------------------------------------------------- #
+#                       ProgressMeter                                       #
+# ------------------------------------------------------------------------- #
+class ProgessMeter:
+    '''
+    Display a Progress Meter without blocking
+    Provides an early cancelling
+    '''
+    def __init__(self, title, msg, maxItems):
+        self._app = wx.App()
+        self._meter = wx.ProgressDialog(title, msg, maxItems,
+                                  style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME |
+                                        wx.PD_SMOOTH | wx.PD_APP_MODAL | wx.PD_ESTIMATED_TIME)
+
+    def update(self, msg, currentItemNumber):
+        (self.keepGoing, self.skip) = self._meter.Update(currentItemNumber, newmsg=msg)
+        return self.keepGoing
+
+    def __del__(self):
+        try:
+            self._meter.Destroy()
+            self._app.Destroy()
+        except:
+            pass    # trouble destroying something
+
+# ------------------------------------------------------------------------- #
+#                       ProgressMeterCreate                                 #
+# ------------------------------------------------------------------------- #
+def ProgressMeterCreate(title, msg, maxItems):
+    '''
+    Create a progress meter that can be updated asynchronously (it's non-hlocking)
+    Provides an early cancelling mechanism that's passed back through update call
+    Meter will automatically close itself
+    Returns a ProgressMeter object
+    While not required to do, if caller wants to close the window then do that by setting the previously
+        returned meter object to null:
+        meter = []
+    '''
+    meter = ProgessMeter(title, msg, maxItems)
+    return meter
+
+
+# ------------------------------------------------------------------------- #
+#                       ProgressMeterUpdate                                 #
+# ------------------------------------------------------------------------- #
+def ProgressMeterUpdate(meter, msg, currentItemNumber):
+    '''
+    Update a previously created meter
+    Inputs - meter - meter object previously created
+             currentItemNumber - progress to report in form of currentItemNumber out of maxItems
+    Returns - not_cancelled - True/False indicating if used cancelledk operation
+            True = Not cancelled... keep on going!
+            False = Cancelled... stop please!
+    '''
+    not_cancelled = meter.update(msg, currentItemNumber)
+    return not_cancelled
+
+
+# ------------------------------------------------------------------------- #
+#                       set_icon                                            #
+# ------------------------------------------------------------------------- #
+
+def set_icon(dlg, icon):
+    if not icon:
+        return
+    if type(icon) is str:
+        ico = wx.Icon(icon)
+        dlg.SetIcon(ico)
+        return
+    if type(icon) == type(wx.Icon()):
+        dlg.SetIcon(ico)
+        return
+    if hasattr(icon, "GetIcon"):
+        dlg.SetIcon(icon.GetIcon())
+        return
+    return
+
+# ------------------------------------------------------------------------- #
+#                       ProgressBar class                                   #
+# ------------------------------------------------------------------------- #
+
+class ProgessBar:
+    '''
+    Display a Progress Meter without blocking
+    Provides an early cancelling
+    '''
+
+    def __init__(self, title, msg, maxItems, icon=None):
+        self._app = wx.App()
+        self._meter = wx.GenericProgressDialog(title, msg, maxItems,
+                                               style=wx.PD_CAN_ABORT
+                                                     | wx.PD_ELAPSED_TIME
+                                                     | wx.PD_AUTO_HIDE
+                                                     | wx.PD_REMAINING_TIME
+                                                     | wx.PD_ESTIMATED_TIME)
+        self.maxitems = maxItems
+        self.lastitem = 0
+        set_icon(self._meter, icon)
+
+    def update(self, msg, currentItemNumber):
+        if self.lastitem >= self.maxitems:  # we have already been closed
+            return False
+
+        if currentItemNumber > self.maxitems:  # no exception if number too high
+            self.lastitem = self.maxitems
+        else:
+            self.lastitem = currentItemNumber
+
+        keepGoing, _ = self._meter.Update(self.lastitem, newmsg=msg)
+
+        return keepGoing
