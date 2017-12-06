@@ -17,7 +17,8 @@ The following functions are currently implemented:
 |MultInputBox|Simple multiple data input dialog|
 |MsgBox|The standard one|
 |BusyInfo|Display non-blocking info|
-|CodeBox|Display files or lines in a scrollable windows|
+|ScrollingTextbox|Display text or text files in a scrollable window|
+|ProgressBar|Display a progress bar|
 
 # Example
 
@@ -25,7 +26,7 @@ The following functions are currently implemented:
 import wxsimpleGUI as sg
 answer = sg.YesNoBox("Do you smoke?", "an honest answer please!")
 if answer:
-    print("you are reducing your life expectancy!")
+    print("you are reducing your lifetime expectancy!")
 else:
     print("I hope you didn't lie ...")
 ''' 
