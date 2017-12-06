@@ -14,6 +14,7 @@ The following functions are currently implemented:
 |ExcBox|Display traceback of last exception|
 |YesNoBox|Return True or False|
 |InputBox|Return user entered string|
+|PasswordBox|Return user entered password|
 |MultInputBox|Simple multiple data input dialog|
 |MsgBox|The standard one|
 |BusyInfo|Display non-blocking info|
