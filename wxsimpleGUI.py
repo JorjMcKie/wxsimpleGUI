@@ -422,19 +422,13 @@ def ProgressMeterUpdate(meter, msg, currentItemNumber):
 # ---------------------------------------------------------------------- #
 def ProgressBar(title, msg, currentItemNumber, totalNumberItems):
     global bar_meter
+    global already_opened
 
-    def AlreadyOpened():
-            global already_opened
-            if 'already_opened' in globals():
-                return True
-            else:
-                already_opened = True
-                return False
-    if not AlreadyOpened():
+    if 'already_opened' not in globals():
+        already_opened = True
         bar_meter = ProgressMeterCreate(title, msg, totalNumberItems)
 
     not_cancelled = ProgressMeterUpdate(bar_meter, msg, currentItemNumber)
-
     return not_cancelled
 
 # ------------------------------------------------------------------------- #
