@@ -366,20 +366,50 @@ class ProgessMeter:
     Display a Progress Meter without blocking
     Provides an early cancelling
     '''
+    #todo make an option to self-close on completion so won't block on update
     def __init__(self, title, msg, maxItems):
+        self._maxItems = maxItems
         self._app = wx.App()
         self._meter = wx.ProgressDialog(title, msg, maxItems,
                                   style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME |
                                         wx.PD_SMOOTH | wx.PD_APP_MODAL | wx.PD_ESTIMATED_TIME)
 
-    def update(self, msg, currentItemNumber):
-        (self.keepGoing, self.skip) = self._meter.Update(currentItemNumber, newmsg=msg)
-        return self.keepGoing
+    # ------------------------- Update ------------------------------------- #
+    # Does the heavy lifting of calling the wxProgressDialog                 #
+    # BLOCKING - Note that the update WILL block on the final call until     #
+    # users presses CLOSE button                                             #
+    # ---------------------------------------------------------------------- #
+    # todo make an option to self-close on completion so won't block on update
+    def Update(self, msg, currentItemNumber):
+        if not self._meter:
+            print("*** UPDATE - trying to update an invalid meter ***")
+            return False
+        # -------------------------  in a real pickle. user is beyond max. This stops the bar  ------------------------- #
+        #todo user thinks processing is done but the user program will continue. for now claiming the user cancelled
+        if currentItemNumber > self._maxItems:
+            self.not_cancelled = False
+            self.skip = False
+        else:
+            (self.not_cancelled, self.skip) = self._meter.Update(currentItemNumber, newmsg=msg)
+        if (currentItemNumber == self._maxItems):       # if at the max, close everything down
+            self.__del__()
+            return True
+        return self.not_cancelled
 
+    # ------------------------- Cancel ------------------------------------- #
+    # Gives caller ability to cancel a meter early                           #
+    # Result is that resources are freed by calling the normal object del    #
+    # ---------------------------------------------------------------------- #
+    def Cancel(self):
+        self.__del__()
+
+    # ------------------------- Delete ------------------------------------- #
+    # ---------------------------------------------------------------------- #
     def __del__(self):
         try:
             self._meter.Destroy()
             self._app.Destroy()
+            self._meter = None
         except:
             pass    # trouble destroying something
 
@@ -400,49 +430,30 @@ def ProgressMeterCreate(title, msg, maxItems):
     return meter
 
 
-# ------------------------------------------------------------------------- #
-#                       ProgressMeterUpdate                                 #
-# ------------------------------------------------------------------------- #
-#todo Missing a ProgressMeterCancel mechanism should the user's program want to destroy the meter early
-def ProgressMeterUpdate(meter, msg, currentItemNumber):
-    '''
-    Update a previously created meter
-    Inputs - meter - meter object previously created
-             currentItemNumber - progress to report in form of currentItemNumber out of maxItems
-    Returns - not_cancelled - True/False indicating if used cancelledk operation
-            True = Not cancelled... keep on going!
-            False = Cancelled... stop please!
-    '''
-    not_cancelled = meter.update(msg, currentItemNumber)
-    return not_cancelled
-
-
 # ---------------------------------------------------------------------- #
-#                           ProgressBar                                  #
+#                           ProgressMeterCreateAndUpdate                 #
 # This is a ProgressMeter that does not require a "create" or open call  #
+#   If user presses Cancel, function will close Meter for caller         #
+#   To cancel early, set currentItemNumber = totalNumberItems            #
 # ---------------------------------------------------------------------- #
 def ProgressMeterCreateAndUpdate(title, msg, currentItemNumber, totalNumberItems):
-    global bar_meter
     global already_opened
-
-    if 'already_opened' not in globals():
-        already_opened = True
-        bar_meter = ProgressMeterCreate(title, msg, totalNumberItems)
-
-    not_cancelled = ProgressMeterUpdate(bar_meter, msg, currentItemNumber)
-    if not_cancelled is False:      # if the user pressed the cancel button, close the progress bar widget
-        ProgressBarCancel()
+    global pmeter
+    # -------------------------  Trick to see if this is first time call  ------------------------- #
+    if 'pmeter' not in globals():
+        # print(f'*** Creating Meter (First Time Through) ***')
+        pmeter = ProgressMeterCreate(title, msg, totalNumberItems)
+    # if we have a good progress meter, update it (is this needed?)
+    if pmeter:
+        not_cancelled = pmeter.Update(msg, currentItemNumber)
+    else:
+        not_cancelled = False
+    # ------------------------- If at the max, get rid of the meter entirely  ------------------------- #
+    # ------------------------- Need to delete the meter object for the user  ------------------------- #
+    if not_cancelled is False or currentItemNumber == totalNumberItems:
+        pmeter = []
+        del pmeter      # remove from global namespace so that we'll be back to initialized state
     return not_cancelled
-
-# ---------------------------------------------------------------------- #
-#                           ProgressBarCancel                            #
-# Called by USER if program needs to close the progress bar early        #
-# ---------------------------------------------------------------------- #
-def ProgressBarCancel():
-    global bar_meter
-
-    bar_meter = None
-    return
 
 
 # ------------------------------------------------------------------------- #
@@ -483,18 +494,15 @@ class ProgessBar:
                                                      | wx.PD_REMAINING_TIME
                                                      | wx.PD_ESTIMATED_TIME)
         self.maxitems = maxItems
-        self.lastitem = 0
         set_icon(self._meter, icon)
 
     def update(self, msg, currentItemNumber):
-        if self.lastitem >= self.maxitems:  # we have already been closed
+        if currentItemNumber > self.maxitems:  # we have already been closed
             return False
 
         if currentItemNumber > self.maxitems:  # no exception if number too high
-            self.lastitem = self.maxitems
-        else:
-            self.lastitem = currentItemNumber
+            currentItemNumber = self.maxitems
 
-        keepGoing, _ = self._meter.Update(self.lastitem, newmsg=msg)
+        keepGoing, _ = self._meter.Update(currentItemNumber, newmsg=msg)
 
         return keepGoing
