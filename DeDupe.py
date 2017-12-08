@@ -22,10 +22,11 @@ def DeDuplicate_folder(path):
     pngfiles = os.listdir(pngdir)
     total_files = len(pngfiles)
     msg = f'Deduplicating 0 of {total_files} files'
-    pmeter = sGUI.ProgressMeterCreate('Deduplication progress', msg, total_files)
+    # pmeter = sGUI.ProgressMeterCreate('Deduplication progress', msg, total_files)
     for idx, f in enumerate(pngfiles):
         msg = f'Deduplicating {idx} of {total_files} files\n' f'{dup_count} Dupes found\n' f'{small_count} Too small'
-        not_cancelled = sGUI.ProgressMeterUpdate(pmeter, msg, idx)
+        not_cancelled = sGUI.ProgressBar('De-dupe', msg, idx, total_files)
+        # not_cancelled = sGUI.ProgressMeterUpdate(pmeter, msg, idx)
         if not not_cancelled:
             break
         if not f.endswith(".png") and not f.endswith(".jpg"):

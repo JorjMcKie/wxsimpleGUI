@@ -416,6 +416,28 @@ def ProgressMeterUpdate(meter, msg, currentItemNumber):
     return not_cancelled
 
 
+# ---------------------------------------------------------------------- #
+#                           ProgressBar                                  #
+# This is a ProgressMeter that does not require a "create" or open call  #
+# ---------------------------------------------------------------------- #
+def ProgressBar(title, msg, currentItemNumber, totalNumberItems):
+    global bar_meter
+
+    def AlreadyOpened():
+            global already_opened
+            if 'already_opened' in globals():
+                return True
+            else:
+                already_opened = True
+                return False
+    if not AlreadyOpened():
+        bar_meter = ProgressMeterCreate(title, msg, totalNumberItems)
+        not_cancelled = True
+    else:
+        not_cancelled = ProgressMeterUpdate(bar_meter, msg, currentItemNumber)
+
+    return not_cancelled
+
 # ------------------------------------------------------------------------- #
 #                       set_icon                                            #
 # ------------------------------------------------------------------------- #
