@@ -25,7 +25,7 @@ def DeDuplicate_folder(path):
     # pmeter = sGUI.ProgressMeterCreate('Deduplication progress', msg, total_files)
     for idx, f in enumerate(pngfiles):
         msg = f'Deduplicating {idx} of {total_files} files\n' f'{dup_count} Dupes found\n' f'{small_count} Too small'
-        not_cancelled = sGUI.ProgressBar('De-dupe', msg, idx, total_files)
+        not_cancelled = sGUI.ProgressMeterCreateAndUpdate('De-dupe', msg, idx, total_files)
         # not_cancelled = sGUI.ProgressMeterUpdate(pmeter, msg, idx)
         if not not_cancelled:
             break
@@ -52,6 +52,7 @@ def DeDuplicate_folder(path):
 
     end_reason = ('**User Cancelled**', 'Completed Normally')[not_cancelled is True]
     msg = f'{end_reason}\n'\
+          f'{total} Files processed\n'\
           f'{dup_count} Duplicates found\n'\
           f'{small_count} Removed because too small'
     sGUI.MsgBox('Duplicate Finder Ended', msg)

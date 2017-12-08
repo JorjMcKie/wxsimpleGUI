@@ -403,6 +403,7 @@ def ProgressMeterCreate(title, msg, maxItems):
 # ------------------------------------------------------------------------- #
 #                       ProgressMeterUpdate                                 #
 # ------------------------------------------------------------------------- #
+#todo Missing a ProgressMeterCancel mechanism should the user's program want to destroy the meter early
 def ProgressMeterUpdate(meter, msg, currentItemNumber):
     '''
     Update a previously created meter
@@ -420,7 +421,7 @@ def ProgressMeterUpdate(meter, msg, currentItemNumber):
 #                           ProgressBar                                  #
 # This is a ProgressMeter that does not require a "create" or open call  #
 # ---------------------------------------------------------------------- #
-def ProgressBar(title, msg, currentItemNumber, totalNumberItems):
+def ProgressMeterCreateAndUpdate(title, msg, currentItemNumber, totalNumberItems):
     global bar_meter
     global already_opened
 
@@ -429,7 +430,20 @@ def ProgressBar(title, msg, currentItemNumber, totalNumberItems):
         bar_meter = ProgressMeterCreate(title, msg, totalNumberItems)
 
     not_cancelled = ProgressMeterUpdate(bar_meter, msg, currentItemNumber)
+    if not_cancelled is False:      # if the user pressed the cancel button, close the progress bar widget
+        ProgressBarCancel()
     return not_cancelled
+
+# ---------------------------------------------------------------------- #
+#                           ProgressBarCancel                            #
+# Called by USER if program needs to close the progress bar early        #
+# ---------------------------------------------------------------------- #
+def ProgressBarCancel():
+    global bar_meter
+
+    bar_meter = None
+    return
+
 
 # ------------------------------------------------------------------------- #
 #                       set_icon                                            #
