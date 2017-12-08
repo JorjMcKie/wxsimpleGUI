@@ -432,9 +432,8 @@ def ProgressBar(title, msg, currentItemNumber, totalNumberItems):
                 return False
     if not AlreadyOpened():
         bar_meter = ProgressMeterCreate(title, msg, totalNumberItems)
-        not_cancelled = True
-    else:
-        not_cancelled = ProgressMeterUpdate(bar_meter, msg, currentItemNumber)
+
+    not_cancelled = ProgressMeterUpdate(bar_meter, msg, currentItemNumber)
 
     return not_cancelled
 
