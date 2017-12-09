@@ -365,17 +365,20 @@ class ProgessMeter:
     '''
     Display a Progress Meter without blocking
     Provides an early cancelling
+    title, msg, maxItems as inputs
     '''
     #todo make an option to self-close on completion so won't block on update
-    def __init__(self, title, msg, maxItems):
+    def __init__(self, title, msg, maxItems, AutoClose = False):
         self._maxItems = maxItems
         self._app = wx.App()
+
         self._meter = wx.ProgressDialog(title, msg, maxItems,
                                   style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME |
-                                        wx.PD_SMOOTH | wx.PD_APP_MODAL | wx.PD_ESTIMATED_TIME)
+                                        wx.PD_SMOOTH | wx.PD_APP_MODAL | wx.PD_ESTIMATED_TIME |
+                                        (0,wx.PD_AUTO_HIDE)[AutoClose == True] )
 
     # ------------------------- Update ------------------------------------- #
-    # Does the heavy lifting of calling the wxProgressDialog                 #
+    # Does the hseavy lifting of calling the wxProgressDialog                 #
     # BLOCKING - Note that the update WILL block on the final call until     #
     # users presses CLOSE button                                             #
     # ---------------------------------------------------------------------- #
@@ -391,9 +394,11 @@ class ProgessMeter:
             self.skip = False
         else:
             (self.not_cancelled, self.skip) = self._meter.Update(currentItemNumber, newmsg=msg)
+
         if (currentItemNumber == self._maxItems):       # if at the max, close everything down
             self.__del__()
             return True
+
         return self.not_cancelled
 
     # ------------------------- Cancel ------------------------------------- #
@@ -402,6 +407,7 @@ class ProgessMeter:
     # ---------------------------------------------------------------------- #
     def Cancel(self):
         self.__del__()
+        return
 
     # ------------------------- Delete ------------------------------------- #
     # ---------------------------------------------------------------------- #
@@ -412,49 +418,7 @@ class ProgessMeter:
             self._meter = None
         except:
             pass    # trouble destroying something
-
-# ------------------------------------------------------------------------- #
-#                       ProgressMeterCreate                                 #
-# ------------------------------------------------------------------------- #
-def ProgressMeterCreate(title, msg, maxItems):
-    '''
-    Create a progress meter that can be updated asynchronously (it's non-hlocking)
-    Provides an early cancelling mechanism that's passed back through update call
-    Meter will automatically close itself
-    Returns a ProgressMeter object
-    While not required to do, if caller wants to close the window then do that by setting the previously
-        returned meter object to null:
-        meter = []
-    '''
-    meter = ProgessMeter(title, msg, maxItems)
-    return meter
-
-
-# ---------------------------------------------------------------------- #
-#                           ProgressMeterCreateAndUpdate                 #
-# This is a ProgressMeter that does not require a "create" or open call  #
-#   If user presses Cancel, function will close Meter for caller         #
-#   To cancel early, set currentItemNumber = totalNumberItems            #
-# ---------------------------------------------------------------------- #
-def ProgressMeterCreateAndUpdate(title, msg, currentItemNumber, totalNumberItems):
-    global already_opened
-    global pmeter
-    # -------------------------  Trick to see if this is first time call  ------------------------- #
-    if 'pmeter' not in globals():
-        # print(f'*** Creating Meter (First Time Through) ***')
-        pmeter = ProgressMeterCreate(title, msg, totalNumberItems)
-    # if we have a good progress meter, update it (is this needed?)
-    if pmeter:
-        not_cancelled = pmeter.Update(msg, currentItemNumber)
-    else:
-        not_cancelled = False
-    # ------------------------- If at the max, get rid of the meter entirely  ------------------------- #
-    # ------------------------- Need to delete the meter object for the user  ------------------------- #
-    if not_cancelled is False or currentItemNumber == totalNumberItems:
-        pmeter = []
-        del pmeter      # remove from global namespace so that we'll be back to initialized state
-    return not_cancelled
-
+        return
 
 # ------------------------------------------------------------------------- #
 #                       set_icon                                            #
