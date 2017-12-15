@@ -424,8 +424,8 @@ class ProgessMeter:
 def set_icon(dlg, icon):
     if not icon:
         return
+    ico = wx.Icon(icon)
     if type(icon) is str:
-        ico = wx.Icon(icon)
         dlg.SetIcon(ico)
         return
     if type(icon) == type(wx.Icon()):
