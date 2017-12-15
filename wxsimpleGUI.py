@@ -367,11 +367,9 @@ class ProgessMeter:
     Provides an early cancelling
     title, msg, maxItems as inputs
     '''
-    #todo make an option to self-close on completion so won't block on update
     def __init__(self, title, msg, maxItems, AutoClose = False):
         self._maxItems = maxItems
         self._app = wx.App()
-
         self._meter = wx.ProgressDialog(title, msg, maxItems,
                                   style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME |
                                         wx.PD_SMOOTH | wx.PD_APP_MODAL | wx.PD_ESTIMATED_TIME |
@@ -382,10 +380,9 @@ class ProgessMeter:
     # BLOCKING - Note that the update WILL block on the final call until     #
     # users presses CLOSE button                                             #
     # ---------------------------------------------------------------------- #
-    # todo make an option to self-close on completion so won't block on update
     def Update(self, msg, currentItemNumber):
         if not self._meter:
-            print("*** UPDATE - trying to update an invalid meter ***")
+            # it is not a good meter... no harm no foul.... move on....
             return False
         # -------------------------  in a real pickle. user is beyond max. This stops the bar  ------------------------- #
         #todo user thinks processing is done but the user program will continue. for now claiming the user cancelled
